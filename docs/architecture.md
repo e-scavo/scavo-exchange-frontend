@@ -96,6 +96,17 @@ Service classes currently exposed:
 
 These services form the first contract boundary between UI and backend.
 
+
+### 6. Toolchain baseline
+
+The frontend now standardizes Flutter execution through FVM with a pinned SDK version:
+
+- Flutter `3.41.5`
+- `.fvmrc` as project truth
+- `.vscode/settings.json` pointing to `.fvm/flutter_sdk`
+
+This avoids drift between local machines and future CI execution.
+
 ## Validation
 
 The architecture is considered valid for Phase 0.1 when:

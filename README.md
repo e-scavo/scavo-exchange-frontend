@@ -36,6 +36,29 @@ The current frontend implementation is intentionally limited to contracts confir
 
 Wallet challenge, verify, and wallet inventory contracts are modeled, but not yet exposed as a full UI flow in this first frontend phase.
 
+## Flutter version management
+
+This project uses FVM with a pinned Flutter version for reproducible local development and CI behavior.
+
+### Pinned version
+
+- Flutter: `3.41.5`
+
+### Project files
+
+- `.fvmrc`
+- `.vscode/settings.json`
+
+### Recommended commands
+
+```bash
+fvm install 3.41.5
+fvm use 3.41.5
+fvm flutter pub get
+fvm flutter analyze
+fvm flutter test
+```
+
 ## Runtime configuration
 
 The app reads configuration from compile-time defines when available.
@@ -50,7 +73,7 @@ The app reads configuration from compile-time defines when available.
 ### Example
 
 ```bash
-flutter run -d chrome \
+fvm flutter run -d chrome \
   --dart-define=SCAVO_API_BASE_URL=http://localhost:8080 \
   --dart-define=SCAVO_WS_URL=ws://localhost:8080/ws \
   --dart-define=SCAVO_APP_ENV=local

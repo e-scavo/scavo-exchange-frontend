@@ -45,6 +45,7 @@ Delivered:
 - typed models for current system/auth contracts
 - minimal dev login + session restore flow
 - tooling hardening for local sync script
+- FVM standardization with pinned Flutter 3.41.5
 
 ### Pending
 
@@ -58,7 +59,7 @@ Delivered:
 
 Phase 0.1 is considered complete when the frontend:
 
-- launches into the SCAVO shell instead of the Flutter counter
+- resolves the pinned FVM toolchain (`3.41.5`)
 - queries `/health` and `/version`
 - logs in through `/auth/login`
 - restores token-backed session through `/auth/session`

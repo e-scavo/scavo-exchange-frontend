@@ -92,16 +92,28 @@ The frontend now:
 
 The previous hardcoded sync script configuration was replaced by a local JSON config file approach with an example file and `.gitignore` protections.
 
+### 6. FVM standardization
+
+The frontend now standardizes Flutter execution through FVM using a pinned project version:
+
+- Flutter `3.41.5`
+- `.fvmrc` committed to the repo
+- `.vscode/settings.json` pointing to `.fvm/flutter_sdk`
+
+This keeps local execution, documentation, and future CI aligned around the same SDK version.
+
 ## Validation
 
 Manual validation target for this phase:
 
 1. run backend locally on `http://localhost:8080`
-2. launch frontend with default config or matching `--dart-define` values
-3. verify bootstrap loads service status and version
-4. log in with an email and password `dev`
-5. confirm session page shows session and user payloads
-6. resize layout and verify shell adapts between drawer, rail, and sidebar behavior
+2. install and use the pinned toolchain with `fvm install 3.41.5` and `fvm use 3.41.5`
+3. run `fvm flutter pub get`
+4. launch frontend with default config or matching `--dart-define` values
+5. verify bootstrap loads service status and version
+6. log in with an email and password `dev`
+7. confirm session page shows session and user payloads
+8. resize layout and verify shell adapts between drawer, rail, and sidebar behavior
 
 ## Release Impact
 

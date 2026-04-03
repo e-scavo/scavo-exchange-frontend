@@ -41,6 +41,7 @@ The frontend now has enough structure that future work requires a concise but re
 - dev login screen
 - session display screen
 - local tooling config hardening
+- FVM pinning to Flutter 3.41.5
 
 ### Backend contracts currently consumed
 
@@ -64,6 +65,7 @@ A likely next step is Phase 0.2 with focus on auth UX hardening and shell refine
 
 ## Validation
 
+- run `fvm flutter pub get`
 - run frontend against local backend
 - log in with password `dev`
 - confirm session and current user load successfully
