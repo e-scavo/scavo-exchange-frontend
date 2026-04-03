@@ -1,0 +1,12 @@
+{
+  "host": "127.0.0.1",
+  "port": 22,
+  "username": "your-user",
+  "password": "replace-me-locally",
+  "remote_root": "/home/your-user/scavo/scavo.exchange-backend",
+  "local_root": "../scavo.exchange-backend",
+  "exclude_patterns": [
+    ".git",
+    "*.zip"
+  ]
+}
