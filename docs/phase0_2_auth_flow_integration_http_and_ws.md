@@ -45,6 +45,30 @@ Expected runtime validation:
 - `system.ping`, `auth.session`, and `auth.whoami` resolve
 - logout clears both local session and WS state
 
+## Validation Notes
+
+- HTTP baseline connectivity validated (/health, /version)
+- Auth flow integration implemented and wired
+- WebSocket integration implemented and gated by authenticated session
+- Login functional validation deferred
+
+### Deferred Validation
+
+Login and authenticated session validation is intentionally deferred due to backend constraints:
+
+- No hardcoded or dev credentials are exposed in current backend stage
+- Frontend does not simulate or bypass authentication
+
+This validation will be completed once backend provides:
+
+- valid test credentials OR
+- wallet-based authentication flow OR
+- controlled dev login mechanism
+
+Status:
+- Phase technically complete
+- Full runtime validation pending backend readiness
+
 ## Release Impact
 No backend change is required. Frontend gains a central authenticated application state and a first real HTTP + WS integration boundary.
 
