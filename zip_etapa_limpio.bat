@@ -40,7 +40,7 @@ mkdir "%TEMP_ROOT%\scavo.exchange-frontend"
 
 echo.
 echo Copiando backend...
-robocopy "%BACKEND_DIR%" "%TEMP_ROOT%\scavo.exchange-backend" /E /XD .git .idea .vscode dist build .dart_tool distribution\submissions >nul
+robocopy "%BACKEND_DIR%" "%TEMP_ROOT%\scavo.exchange-backend" /E /XD .fvm .git .idea .vscode dist build .dart_tool distribution\submissions >nul
 
 if errorlevel 8 (
     echo ERROR: fallo robocopy al copiar backend.
@@ -49,12 +49,17 @@ if errorlevel 8 (
 )
 
 echo Copiando frontend...
-robocopy "%FRONTEND_DIR%" "%TEMP_ROOT%\scavo.exchange-frontend" /E /XD .git .idea .vscode dist build .dart_tool distribution\submissions >nul
+robocopy "%FRONTEND_DIR%" "%TEMP_ROOT%\scavo.exchange-frontend" /E /XD .fvm .git .idea .vscode dist build .dart_tool distribution\submissions >nul
 
 if errorlevel 8 (
     echo ERROR: fallo robocopy al copiar frontend.
     rmdir /s /q "%TEMP_DIR%"
     exit /b 1
+)
+
+echo Eliminando windows\flutter\ephemeral del temporal...
+if exist "%TEMP_ROOT%\scavo.exchange-frontend\windows\flutter\ephemeral" (
+    rmdir /s /q "%TEMP_ROOT%\scavo.exchange-frontend\windows\flutter\ephemeral"
 )
 
 if exist "%OUTPUT_FILE%" del /f /q "%OUTPUT_FILE%"

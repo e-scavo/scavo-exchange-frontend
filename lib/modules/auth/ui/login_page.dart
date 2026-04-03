@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import '../../../app/app.dart';
 import '../../../app/responsive_app_shell.dart';
 import '../../../app/router.dart';
-import '../../../core/errors/app_error.dart';
-import '../models/login_models.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -15,11 +13,8 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController(text: 'demo@scavo.exchange');
-  final _passwordController = TextEditingController(text: 'dev');
-
-  bool _submitting = false;
-  String? _error;
+  final _emailController = TextEditingController(text: 'dev@scavo.local');
+  final _passwordController = TextEditingController(text: 'devpassword');
 
   @override
   void dispose() {
@@ -30,84 +25,167 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return ResponsiveAppShell(
-      title: 'SCAVO Exchange',
-      selectedIndex: 1,
-      destinations: _destinations(context),
-      child: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 520),
-          child: ListView(
-            padding: const EdgeInsets.all(24),
-            shrinkWrap: true,
-            children: [
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Form(
-                    key: _formKey,
+    final authController = AuthSessionScope.of(context);
+
+    return AnimatedBuilder(
+      animation: authController,
+      builder: (context, _) {
+        final authState = authController.state;
+
+        return ResponsiveAppShell(
+          title: 'SCAVO Exchange',
+          selectedIndex: 1,
+          destinations: _destinations(context),
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(24),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 520),
+                child: Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Dev sign in', style: Theme.of(context).textTheme.headlineSmall),
-                        const SizedBox(height: 8),
+                        Text(
+                          'Developer login',
+                          style: Theme.of(context).textTheme.headlineSmall,
+                        ),
+                        const SizedBox(height: 12),
                         const Text(
-                          'This screen uses the current backend dev login contract. It is a bootstrap integration surface, not the final production auth UX.',
+                          'Phase 0.2 keeps the existing backend-confirmed HTTP login while consolidating session state into a single application controller.',
                         ),
                         const SizedBox(height: 20),
-                        TextFormField(
-                          controller: _emailController,
-                          decoration: const InputDecoration(labelText: 'Email'),
-                          validator: (value) {
-                            if (value == null || value.trim().isEmpty) {
-                              return 'Email is required.';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 16),
-                        TextFormField(
-                          controller: _passwordController,
-                          decoration: const InputDecoration(labelText: 'Password'),
-                          obscureText: true,
-                          validator: (value) {
-                            if (value == null || value.trim().isEmpty) {
-                              return 'Password is required.';
-                            }
-                            return null;
-                          },
-                        ),
-                        if (_error != null) ...[
+                        if (authState.lastError != null) ...[
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color:
+                                  Theme.of(context).colorScheme.errorContainer,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              authState.lastError!.message,
+                              style: TextStyle(
+                                color:
+                                    Theme.of(
+                                      context,
+                                    ).colorScheme.onErrorContainer,
+                              ),
+                            ),
+                          ),
                           const SizedBox(height: 16),
-                          Text(
-                            _error!,
-                            style: TextStyle(color: Theme.of(context).colorScheme.error),
-                          ),
                         ],
-                        const SizedBox(height: 24),
-                        SizedBox(
-                          width: double.infinity,
-                          child: FilledButton.icon(
-                            onPressed: _submitting ? null : _submit,
-                            icon: _submitting
-                                ? const SizedBox(
-                                    width: 18,
-                                    height: 18,
-                                    child: CircularProgressIndicator(strokeWidth: 2),
-                                  )
-                                : const Icon(Icons.login),
-                            label: Text(_submitting ? 'Signing in...' : 'Sign In'),
+                        if (authState.isAuthenticated) ...[
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color:
+                                  Theme.of(
+                                    context,
+                                  ).colorScheme.primaryContainer,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              'Active authenticated session detected for ${authState.user?.email ?? authState.session?.email ?? authState.session?.userId ?? 'current user'}.',
+                              style: TextStyle(
+                                color:
+                                    Theme.of(
+                                      context,
+                                    ).colorScheme.onPrimaryContainer,
+                              ),
+                            ),
                           ),
+                          const SizedBox(height: 16),
+                        ],
+                        Form(
+                          key: _formKey,
+                          child: Column(
+                            children: [
+                              TextFormField(
+                                controller: _emailController,
+                                decoration: const InputDecoration(
+                                  labelText: 'Email',
+                                  hintText: 'dev@scavo.local',
+                                ),
+                                validator: (value) {
+                                  if (value == null || value.trim().isEmpty) {
+                                    return 'Email is required.';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              const SizedBox(height: 16),
+                              TextFormField(
+                                controller: _passwordController,
+                                decoration: const InputDecoration(
+                                  labelText: 'Password',
+                                ),
+                                obscureText: true,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Password is required.';
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        Wrap(
+                          spacing: 12,
+                          runSpacing: 12,
+                          children: [
+                            FilledButton.icon(
+                              onPressed:
+                                  authState.isSubmittingLogin ? null : _submit,
+                              icon:
+                                  authState.isSubmittingLogin
+                                      ? const SizedBox(
+                                        width: 18,
+                                        height: 18,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                        ),
+                                      )
+                                      : const Icon(Icons.login),
+                              label: Text(
+                                authState.isSubmittingLogin
+                                    ? 'Signing in...'
+                                    : 'Sign In',
+                              ),
+                            ),
+                            OutlinedButton.icon(
+                              onPressed:
+                                  authState.isAuthenticated
+                                      ? () => Navigator.of(
+                                        context,
+                                      ).pushReplacementNamed(AppRouter.session)
+                                      : null,
+                              icon: const Icon(Icons.badge_outlined),
+                              label: const Text('Open Session View'),
+                            ),
+                            TextButton(
+                              onPressed:
+                                  authState.isSubmittingLogin
+                                      ? null
+                                      : authController.clearVisibleErrors,
+                              child: const Text('Clear Errors'),
+                            ),
+                          ],
                         ),
                       ],
                     ),
                   ),
                 ),
               ),
-            ],
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
@@ -116,17 +194,21 @@ class _LoginPageState extends State<LoginPage> {
       ShellDestination(
         label: 'Bootstrap',
         icon: Icons.home_outlined,
-        onTap: () => Navigator.of(context).pushReplacementNamed(AppRouter.bootstrap),
+        onTap:
+            () =>
+                Navigator.of(context).pushReplacementNamed(AppRouter.bootstrap),
       ),
       ShellDestination(
         label: 'Login',
         icon: Icons.login,
-        onTap: () => Navigator.of(context).pushReplacementNamed(AppRouter.login),
+        onTap:
+            () => Navigator.of(context).pushReplacementNamed(AppRouter.login),
       ),
       ShellDestination(
         label: 'Session',
         icon: Icons.badge_outlined,
-        onTap: () => Navigator.of(context).pushReplacementNamed(AppRouter.session),
+        onTap:
+            () => Navigator.of(context).pushReplacementNamed(AppRouter.session),
       ),
     ];
   }
@@ -136,38 +218,18 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
-    setState(() {
-      _submitting = true;
-      _error = null;
-    });
+    final authController = AuthSessionScope.of(context);
+    await authController.login(
+      email: _emailController.text.trim(),
+      password: _passwordController.text,
+    );
 
-    try {
-      final services = AppServicesScope.of(context);
-      final response = await services.authApi.login(
-        LoginRequest(
-          email: _emailController.text.trim(),
-          password: _passwordController.text,
-        ),
-      );
-      await services.sessionStorage.writeToken(response.accessToken);
-      if (!mounted) {
-        return;
-      }
+    if (!mounted) {
+      return;
+    }
+
+    if (authController.state.isAuthenticated) {
       Navigator.of(context).pushReplacementNamed(AppRouter.session);
-    } on AppError catch (error) {
-      setState(() {
-        _error = error.message;
-      });
-    } catch (error) {
-      setState(() {
-        _error = error.toString();
-      });
-    } finally {
-      if (mounted) {
-        setState(() {
-          _submitting = false;
-        });
-      }
     }
   }
 }

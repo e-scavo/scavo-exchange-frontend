@@ -124,3 +124,8 @@ Frontend documentation starts in:
 - `docs/phase-status.md`
 - `docs/phase0_1_frontend_baseline_multiplatform_foundation_and_backend_contract_alignment.md`
 - `docs/handoff/frontend-status.md`
+
+
+## Phase 0.2 status
+
+The frontend now restores authenticated state through a central controller and complements HTTP auth with backend-confirmed WebSocket actions: `system.ping`, `auth.session`, and `auth.whoami`.

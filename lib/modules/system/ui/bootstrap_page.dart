@@ -4,6 +4,7 @@ import '../../../app/app.dart';
 import '../../../app/responsive_app_shell.dart';
 import '../../../app/router.dart';
 import '../../../core/errors/app_error.dart';
+import '../../auth/models/auth_state.dart';
 import '../models/health_models.dart';
 import '../models/version_models.dart';
 
@@ -15,149 +16,213 @@ class BootstrapPage extends StatefulWidget {
 }
 
 class _BootstrapPageState extends State<BootstrapPage> {
-  late final Future<_BootstrapViewData> _future;
+  late final Future<_SystemBootstrapData> _systemFuture;
 
   @override
   void initState() {
     super.initState();
-    _future = _load();
+    _systemFuture = _loadSystemData();
   }
 
-  Future<_BootstrapViewData> _load() async {
+  Future<_SystemBootstrapData> _loadSystemData() async {
     final services = AppServicesScope.of(context);
-
     final health = await services.systemApi.getHealth();
     final version = await services.systemApi.getVersion();
-
-    final token = await services.sessionStorage.readToken();
-    if (token == null || token.trim().isEmpty) {
-      return _BootstrapViewData(
-        health: health,
-        version: version,
-        isAuthenticated: false,
-      );
-    }
-
-    try {
-      final session = await services.authApi.getSession();
-      final me = await services.authApi.getMe();
-      return _BootstrapViewData(
-        health: health,
-        version: version,
-        isAuthenticated: true,
-        sessionJson: _sessionToRows(session.session),
-        userJson: _userToRows(me.user),
-      );
-    } on AppError {
-      await services.sessionStorage.clearToken();
-      return _BootstrapViewData(
-        health: health,
-        version: version,
-        isAuthenticated: false,
-      );
-    }
+    return _SystemBootstrapData(health: health, version: version);
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<_BootstrapViewData>(
-      future: _future,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState != ConnectionState.done) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
-        }
+    final authController = AuthSessionScope.of(context);
 
-        if (snapshot.hasError) {
-          return Scaffold(
-            body: Center(
-              child: Padding(
+    return AnimatedBuilder(
+      animation: authController,
+      builder: (context, _) {
+        final authState = authController.state;
+
+        return FutureBuilder<_SystemBootstrapData>(
+          future: _systemFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState != ConnectionState.done) {
+              return const Scaffold(
+                body: Center(child: CircularProgressIndicator()),
+              );
+            }
+
+            if (snapshot.hasError) {
+              return Scaffold(
+                body: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Text('Bootstrap error: ${snapshot.error}'),
+                  ),
+                ),
+              );
+            }
+
+            final system = snapshot.requireData;
+
+            return ResponsiveAppShell(
+              title: 'SCAVO Exchange',
+              selectedIndex: 0,
+              destinations: _destinations(context),
+              actions: [
+                if (authState.isAuthenticated)
+                  TextButton.icon(
+                    onPressed:
+                        authState.isBootstrapping
+                            ? null
+                            : authController.refreshAuthenticatedState,
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Refresh Auth'),
+                  ),
+              ],
+              child: ListView(
                 padding: const EdgeInsets.all(24),
-                child: Text('Bootstrap error: ${snapshot.error}'),
-              ),
-            ),
-          );
-        }
-
-        final data = snapshot.requireData;
-
-        return ResponsiveAppShell(
-          title: 'SCAVO Exchange',
-          selectedIndex: 0,
-          destinations: _destinations(context),
-          child: ListView(
-            padding: const EdgeInsets.all(24),
-            children: [
-              _SummaryHeader(data: data),
-              const SizedBox(height: 20),
-              Wrap(
-                spacing: 16,
-                runSpacing: 16,
                 children: [
-                  _InfoCard(
-                    title: 'Environment',
-                    content: data.version.environment.isEmpty ? 'unknown' : data.version.environment,
-                  ),
-                  _InfoCard(
-                    title: 'Version',
-                    content: data.version.version.isEmpty ? 'unknown' : data.version.version,
-                  ),
-                  _InfoCard(
-                    title: 'Commit',
-                    content: data.version.commit.isEmpty ? 'not provided' : data.version.commit,
-                  ),
-                  _InfoCard(
-                    title: 'Session State',
-                    content: data.isAuthenticated ? 'Authenticated' : 'Anonymous',
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  _SummaryHeader(system: system, authState: authState),
+                  const SizedBox(height: 20),
+                  Wrap(
+                    spacing: 16,
+                    runSpacing: 16,
                     children: [
-                      Text('Current scope', style: Theme.of(context).textTheme.titleLarge),
-                      const SizedBox(height: 12),
-                      const Text(
-                        'Phase 0.1 intentionally exposes only backend-confirmed system and authentication flows. No market, trading, or portfolio contracts are assumed yet.',
+                      _InfoCard(
+                        title: 'Environment',
+                        content:
+                            system.version.environment.isEmpty
+                                ? 'unknown'
+                                : system.version.environment,
                       ),
-                      const SizedBox(height: 16),
-                      Wrap(
-                        spacing: 12,
-                        runSpacing: 12,
-                        children: [
-                          FilledButton.icon(
-                            onPressed: () => Navigator.of(context).pushNamed(AppRouter.login),
-                            icon: const Icon(Icons.login),
-                            label: Text(data.isAuthenticated ? 'Switch Session' : 'Sign In'),
-                          ),
-                          OutlinedButton.icon(
-                            onPressed: data.isAuthenticated
-                                ? () => Navigator.of(context).pushNamed(AppRouter.session)
-                                : null,
-                            icon: const Icon(Icons.badge_outlined),
-                            label: const Text('Open Session View'),
-                          ),
-                        ],
+                      _InfoCard(
+                        title: 'Version',
+                        content:
+                            system.version.version.isEmpty
+                                ? 'unknown'
+                                : system.version.version,
+                      ),
+                      _InfoCard(
+                        title: 'Commit',
+                        content:
+                            system.version.commit.isEmpty
+                                ? 'not provided'
+                                : system.version.commit,
+                      ),
+                      _InfoCard(
+                        title: 'Session State',
+                        content:
+                            authState.isAuthenticated
+                                ? 'Authenticated'
+                                : 'Anonymous',
+                      ),
+                      _InfoCard(
+                        title: 'WS State',
+                        content: authState.wsStatus.name,
+                      ),
+                      _InfoCard(
+                        title: 'WS Ping',
+                        content:
+                            authState.wsPingAt?.toIso8601String() ??
+                            'not available',
                       ),
                     ],
                   ),
-                ),
+                  const SizedBox(height: 20),
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Current scope',
+                            style: Theme.of(context).textTheme.titleLarge,
+                          ),
+                          const SizedBox(height: 12),
+                          const Text(
+                            'Phase 0.2 consolidates authentication as an application-level flow. HTTP remains the source for login and baseline session recovery, while WebSocket now complements session and whoami validation without inventing new backend contracts.',
+                          ),
+                          const SizedBox(height: 16),
+                          Wrap(
+                            spacing: 12,
+                            runSpacing: 12,
+                            children: [
+                              FilledButton.icon(
+                                onPressed:
+                                    () => Navigator.of(
+                                      context,
+                                    ).pushNamed(AppRouter.login),
+                                icon: const Icon(Icons.login),
+                                label: Text(
+                                  authState.isAuthenticated
+                                      ? 'Switch Session'
+                                      : 'Sign In',
+                                ),
+                              ),
+                              OutlinedButton.icon(
+                                onPressed:
+                                    authState.canOpenProtectedViews
+                                        ? () => Navigator.of(
+                                          context,
+                                        ).pushNamed(AppRouter.session)
+                                        : null,
+                                icon: const Icon(Icons.badge_outlined),
+                                label: const Text('Open Session View'),
+                              ),
+                              if (authState.isAuthenticated)
+                                OutlinedButton.icon(
+                                  onPressed:
+                                      authState.isBootstrapping
+                                          ? null
+                                          : authController
+                                              .refreshAuthenticatedState,
+                                  icon: const Icon(Icons.sync),
+                                  label: const Text('Revalidate Auth'),
+                                ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  if (authState.lastError != null) ...[
+                    const SizedBox(height: 20),
+                    _ErrorCard(
+                      title: 'Auth HTTP Error',
+                      error: authState.lastError!,
+                    ),
+                  ],
+                  if (authState.wsError != null) ...[
+                    const SizedBox(height: 20),
+                    _ErrorCard(
+                      title: 'Auth WebSocket Error',
+                      error: authState.wsError!,
+                    ),
+                  ],
+                  if (authState.session != null) ...[
+                    const SizedBox(height: 20),
+                    _JsonCard(
+                      title: 'HTTP Session Snapshot',
+                      data: _sessionToRows(authState.session!),
+                    ),
+                  ],
+                  if (authState.user != null) ...[
+                    const SizedBox(height: 20),
+                    _JsonCard(
+                      title: 'HTTP User Snapshot',
+                      data: _userToRows(authState.user!),
+                    ),
+                  ],
+                  if (authState.whoAmI != null) ...[
+                    const SizedBox(height: 20),
+                    _JsonCard(
+                      title: 'WS WhoAmI Snapshot',
+                      data: _whoAmIToRows(authState),
+                    ),
+                  ],
+                ],
               ),
-              if (data.sessionJson != null) ...[
-                const SizedBox(height: 20),
-                _JsonCard(title: 'Session Snapshot', data: data.sessionJson!),
-              ],
-              if (data.userJson != null) ...[
-                const SizedBox(height: 20),
-                _JsonCard(title: 'User Snapshot', data: data.userJson!),
-              ],
-            ],
-          ),
+            );
+          },
         );
       },
     );
@@ -168,17 +233,21 @@ class _BootstrapPageState extends State<BootstrapPage> {
       ShellDestination(
         label: 'Bootstrap',
         icon: Icons.home_outlined,
-        onTap: () => Navigator.of(context).pushReplacementNamed(AppRouter.bootstrap),
+        onTap:
+            () =>
+                Navigator.of(context).pushReplacementNamed(AppRouter.bootstrap),
       ),
       ShellDestination(
         label: 'Login',
         icon: Icons.login,
-        onTap: () => Navigator.of(context).pushReplacementNamed(AppRouter.login),
+        onTap:
+            () => Navigator.of(context).pushReplacementNamed(AppRouter.login),
       ),
       ShellDestination(
         label: 'Session',
         icon: Icons.badge_outlined,
-        onTap: () => Navigator.of(context).pushReplacementNamed(AppRouter.session),
+        onTap:
+            () => Navigator.of(context).pushReplacementNamed(AppRouter.session),
       ),
     ];
   }
@@ -207,28 +276,38 @@ class _BootstrapPageState extends State<BootstrapPage> {
       'updated_at': user.updatedAt?.toIso8601String() ?? '',
     };
   }
+
+  Map<String, String> _whoAmIToRows(AuthState state) {
+    final whoAmI = state.whoAmI!;
+    return {
+      'authenticated': whoAmI.authenticated.toString(),
+      'user_id': whoAmI.userId,
+      'email': whoAmI.email ?? '',
+      'wallet_id': whoAmI.walletId ?? '',
+      'wallet_address': whoAmI.walletAddress ?? '',
+      'auth_method': whoAmI.authMethod ?? '',
+      'chain': whoAmI.chain ?? '',
+      'subject': whoAmI.subject ?? '',
+      'issuer': whoAmI.issuer ?? '',
+      'expires_at': whoAmI.expiresAt?.toIso8601String() ?? '',
+      'ws_status': state.wsStatus.name,
+      'ws_ping_at': state.wsPingAt?.toIso8601String() ?? '',
+    };
+  }
 }
 
-class _BootstrapViewData {
-  const _BootstrapViewData({
-    required this.health,
-    required this.version,
-    required this.isAuthenticated,
-    this.sessionJson,
-    this.userJson,
-  });
+class _SystemBootstrapData {
+  const _SystemBootstrapData({required this.health, required this.version});
 
   final HealthResponse health;
   final VersionResponse version;
-  final bool isAuthenticated;
-  final Map<String, String>? sessionJson;
-  final Map<String, String>? userJson;
 }
 
 class _SummaryHeader extends StatelessWidget {
-  const _SummaryHeader({required this.data});
+  const _SummaryHeader({required this.system, required this.authState});
 
-  final _BootstrapViewData data;
+  final _SystemBootstrapData system;
+  final AuthState authState;
 
   @override
   Widget build(BuildContext context) {
@@ -238,12 +317,23 @@ class _SummaryHeader extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Phase 0.1 frontend baseline', style: Theme.of(context).textTheme.headlineSmall),
-            const SizedBox(height: 10),
             Text(
-              data.health.ok
+              'Phase 0.2 auth integration',
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              system.health.ok
                   ? 'Backend health endpoint responded successfully.'
-                  : 'Backend health endpoint did not report ok=true.',
+                  : 'Backend health endpoint returned a degraded response.',
+            ),
+            const SizedBox(height: 8),
+            Text(
+              authState.isBootstrapping
+                  ? 'Authentication bootstrap is in progress.'
+                  : authState.isAuthenticated
+                  ? 'Authentication state was restored and consolidated across HTTP + WS.'
+                  : 'No authenticated session is currently active.',
             ),
           ],
         ),
@@ -261,7 +351,7 @@ class _InfoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 230,
+      width: 220,
       child: Card(
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -269,7 +359,7 @@ class _InfoCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(title, style: Theme.of(context).textTheme.titleMedium),
-              const SizedBox(height: 8),
+              const SizedBox(height: 12),
               Text(content),
             ],
           ),
@@ -295,12 +385,39 @@ class _JsonCard extends StatelessWidget {
           children: [
             Text(title, style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(height: 12),
-            ...data.entries.map(
-              (entry) => Padding(
-                padding: const EdgeInsets.only(bottom: 10),
+            for (final entry in data.entries)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8),
                 child: SelectableText('${entry.key}: ${entry.value}'),
               ),
-            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ErrorCard extends StatelessWidget {
+  const _ErrorCard({required this.title, required this.error});
+
+  final String title;
+  final AppError error;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(title, style: Theme.of(context).textTheme.titleLarge),
+            const SizedBox(height: 12),
+            Text('message: ${error.message}'),
+            const SizedBox(height: 6),
+            Text('code: ${error.code ?? ''}'),
+            const SizedBox(height: 6),
+            Text('status_code: ${error.statusCode?.toString() ?? ''}'),
           ],
         ),
       ),

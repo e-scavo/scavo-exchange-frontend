@@ -81,3 +81,8 @@ It does not deliver a market-facing exchange product yet.
 ## Conclusion
 
 Phase 0.1 establishes the frontend project baseline and is the first valid SCAVO Exchange frontend milestone.
+
+
+## Phase 0.2
+
+HTTP + WS auth integration added with a central session controller.

@@ -139,3 +139,8 @@ This architecture does not yet solve:
 ## Conclusion
 
 The frontend now has a documented baseline architecture aligned to the real backend state and suitable for incremental expansion without inventing unsupported features.
+
+
+## Phase 0.2
+
+HTTP + WS auth integration added with a central session controller.
