@@ -26,7 +26,7 @@ void main() {
     );
 
     expect(find.text('SCAVO Exchange'), findsOneWidget);
-    expect(find.text('Bootstrap'), findsWidgets);
-    expect(find.text('Login'), findsNothing);
+    expect(find.text('Bootstrap'), findsOneWidget);
+    expect(find.text('Login'), findsOneWidget);
   });
 }
