@@ -18,20 +18,17 @@ ThemeData buildScavoExchangeTheme() {
       foregroundColor: colorScheme.onSurface,
       elevation: 0,
     ),
-    cardTheme: CardTheme(
+    cardTheme: const CardThemeData(
       elevation: 0,
       margin: EdgeInsets.zero,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-        side: BorderSide(color: colorScheme.outlineVariant),
+        borderRadius: BorderRadius.all(Radius.circular(16)),
       ),
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
       fillColor: Colors.white,
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
-      ),
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
         borderSide: BorderSide(color: colorScheme.outlineVariant),
