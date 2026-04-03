@@ -204,7 +204,7 @@ Future<void> copyDirectoryRecursive({
 
     if (!isRegularFile(attrs)) {
       if (verbose) {
-        stdout.writeln('SKIP SPECIAL ${remoteItemPath}');
+        stdout.writeln('SKIP SPECIAL $remoteItemPath');
       }
       continue;
     }
