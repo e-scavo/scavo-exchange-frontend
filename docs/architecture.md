@@ -144,3 +144,8 @@ The frontend now has a documented baseline architecture aligned to the real back
 ## Phase 0.2
 
 HTTP + WS auth integration added with a central session controller.
+
+
+## Phase 0.3 extension
+
+Wallet flows now reuse the existing auth session controller as the single session consolidation point. A dedicated wallet flow controller orchestrates challenge, verify, and inventory interactions without changing the application-wide auth pattern introduced in Phase 0.2.

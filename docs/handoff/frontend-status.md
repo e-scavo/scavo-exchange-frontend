@@ -87,3 +87,11 @@ It does not replace the detailed phase document or architecture document.
 ## Conclusion
 
 Frontend is no longer a template. It now has a safe technical baseline for continued backend-aligned expansion.
+
+
+## Current status after Phase 0.3
+
+- Bootstrap, login, session, and wallet sections are available.
+- Wallet challenge and verify are exposed through a manual signature workflow.
+- Wallet inventory can be loaded from an authenticated session.
+- Automatic wallet connectors are intentionally not implemented yet.

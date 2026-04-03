@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '../core/layout/app_breakpoints.dart';
+import 'package:scavo_exchange_frontend/core/layout/app_breakpoints.dart';
 
 class ShellDestination {
   const ShellDestination({
@@ -32,7 +31,9 @@ class ResponsiveAppShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final layout = AppBreakpoints.layoutForWidth(MediaQuery.sizeOf(context).width);
+    final layout = AppBreakpoints.layoutForWidth(
+      MediaQuery.sizeOf(context).width,
+    );
 
     switch (layout) {
       case AppLayout.compact:
@@ -55,14 +56,15 @@ class ResponsiveAppShell extends StatelessWidget {
               NavigationRail(
                 selectedIndex: selectedIndex,
                 labelType: NavigationRailLabelType.all,
-                destinations: destinations
-                    .map(
-                      (item) => NavigationRailDestination(
-                        icon: Icon(item.icon),
-                        label: Text(item.label),
-                      ),
-                    )
-                    .toList(),
+                destinations:
+                    destinations
+                        .map(
+                          (item) => NavigationRailDestination(
+                            icon: Icon(item.icon),
+                            label: Text(item.label),
+                          ),
+                        )
+                        .toList(),
                 onDestinationSelected: (index) => destinations[index].onTap(),
               ),
               const VerticalDivider(width: 1),

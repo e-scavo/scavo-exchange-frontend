@@ -21,7 +21,9 @@ class WalletChallengeResponse {
 
   factory WalletChallengeResponse.fromJson(Map<String, dynamic> json) {
     return WalletChallengeResponse(
-      challenge: WalletChallenge.fromJson(json['challenge'] as Map<String, dynamic>),
+      challenge: WalletChallenge.fromJson(
+        json['challenge'] as Map<String, dynamic>,
+      ),
     );
   }
 }
@@ -125,12 +127,16 @@ class WalletVerifyResponse {
       chain: json['chain']?.toString() ?? '',
       authMethod: json['auth_method']?.toString() ?? '',
       walletId: json['wallet_id']?.toString(),
-      user: json['user'] is Map<String, dynamic>
-          ? UserView.fromJson(json['user'] as Map<String, dynamic>)
-          : null,
-      challenge: json['challenge'] is Map<String, dynamic>
-          ? WalletChallenge.fromJson(json['challenge'] as Map<String, dynamic>)
-          : null,
+      user:
+          json['user'] is Map<String, dynamic>
+              ? UserView.fromJson(json['user'] as Map<String, dynamic>)
+              : null,
+      challenge:
+          json['challenge'] is Map<String, dynamic>
+              ? WalletChallenge.fromJson(
+                json['challenge'] as Map<String, dynamic>,
+              )
+              : null,
     );
   }
 }
@@ -168,7 +174,8 @@ class WalletReadModel {
       status: json['status']?.toString() ?? '',
       canSetPrimary: json['can_set_primary'] == true,
       canDetach: json['can_detach'] == true,
-      detachBlockReasons: (json['detach_block_reasons'] as List<dynamic>? ?? const <dynamic>[])
+      detachBlockReasons: (json['detach_block_reasons'] as List<dynamic>? ??
+              const <dynamic>[])
           .map((item) => item.toString())
           .toList(growable: false),
       userId: json['user_id']?.toString(),

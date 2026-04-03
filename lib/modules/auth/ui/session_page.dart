@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-
-import '../../../app/app.dart';
-import '../../../app/responsive_app_shell.dart';
-import '../../../app/router.dart';
-import '../models/auth_state.dart';
-import '../models/session_models.dart';
+import 'package:scavo_exchange_frontend/app/app.dart';
+import 'package:scavo_exchange_frontend/app/responsive_app_shell.dart';
+import 'package:scavo_exchange_frontend/app/router.dart';
+import 'package:scavo_exchange_frontend/modules/auth/models/auth_state.dart';
+import 'package:scavo_exchange_frontend/modules/auth/models/session_models.dart';
 
 class SessionPage extends StatelessWidget {
   const SessionPage({super.key});
@@ -97,6 +96,11 @@ class SessionPage extends StatelessWidget {
                   const SizedBox(height: 20),
                   _WhoAmICard(authState: authState),
                 ],
+                if (authState.resolvedWalletAddress != null ||
+                    authState.resolvedWalletId != null) ...[
+                  const SizedBox(height: 20),
+                  _WalletIdentityCard(authState: authState),
+                ],
               ],
             ],
           ),
@@ -125,6 +129,12 @@ class SessionPage extends StatelessWidget {
         icon: Icons.badge_outlined,
         onTap:
             () => Navigator.of(context).pushReplacementNamed(AppRouter.session),
+      ),
+      ShellDestination(
+        label: 'Wallet',
+        icon: Icons.account_balance_wallet_outlined,
+        onTap:
+            () => Navigator.of(context).pushReplacementNamed(AppRouter.wallet),
       ),
     ];
   }
@@ -299,6 +309,41 @@ class _Field extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: SelectableText('$label: $value'),
+    );
+  }
+}
+
+class _WalletIdentityCard extends StatelessWidget {
+  const _WalletIdentityCard({required this.authState});
+
+  final AuthState authState;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Wallet identity snapshot',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const SizedBox(height: 12),
+            _Field(
+              label: 'Wallet-authenticated',
+              value: authState.isWalletAuthenticated.toString(),
+            ),
+            _Field(label: 'Wallet ID', value: authState.resolvedWalletId ?? ''),
+            _Field(
+              label: 'Wallet Address',
+              value: authState.resolvedWalletAddress ?? '',
+            ),
+            _Field(label: 'Chain', value: authState.resolvedChain ?? ''),
+          ],
+        ),
+      ),
     );
   }
 }

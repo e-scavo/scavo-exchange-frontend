@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-
-import '../../../app/app.dart';
-import '../../../app/responsive_app_shell.dart';
-import '../../../app/router.dart';
-import '../../../core/errors/app_error.dart';
-import '../../auth/models/auth_state.dart';
-import '../models/health_models.dart';
-import '../models/version_models.dart';
+import 'package:scavo_exchange_frontend/app/app.dart';
+import 'package:scavo_exchange_frontend/app/responsive_app_shell.dart';
+import 'package:scavo_exchange_frontend/app/router.dart';
+import 'package:scavo_exchange_frontend/core/errors/app_error.dart';
+import 'package:scavo_exchange_frontend/modules/auth/models/auth_state.dart';
+import 'package:scavo_exchange_frontend/modules/system/models/health_models.dart';
+import 'package:scavo_exchange_frontend/modules/system/models/version_models.dart';
 
 class BootstrapPage extends StatefulWidget {
   const BootstrapPage({super.key});
@@ -139,7 +138,7 @@ class _BootstrapPageState extends State<BootstrapPage> {
                           ),
                           const SizedBox(height: 12),
                           const Text(
-                            'Phase 0.2 consolidates authentication as an application-level flow. HTTP remains the source for login and baseline session recovery, while WebSocket now complements session and whoami validation without inventing new backend contracts.',
+                            'Phase 0.3 keeps Phase 0.2 auth foundations intact while exposing backend-confirmed wallet challenge, verify, and inventory flows. Connector automation is intentionally deferred until a later phase.',
                           ),
                           const SizedBox(height: 16),
                           Wrap(
@@ -167,6 +166,16 @@ class _BootstrapPageState extends State<BootstrapPage> {
                                         : null,
                                 icon: const Icon(Icons.badge_outlined),
                                 label: const Text('Open Session View'),
+                              ),
+                              OutlinedButton.icon(
+                                onPressed:
+                                    () => Navigator.of(
+                                      context,
+                                    ).pushNamed(AppRouter.wallet),
+                                icon: const Icon(
+                                  Icons.account_balance_wallet_outlined,
+                                ),
+                                label: const Text('Wallet Identity'),
                               ),
                               if (authState.isAuthenticated)
                                 OutlinedButton.icon(
@@ -249,6 +258,12 @@ class _BootstrapPageState extends State<BootstrapPage> {
         onTap:
             () => Navigator.of(context).pushReplacementNamed(AppRouter.session),
       ),
+      ShellDestination(
+        label: 'Wallet',
+        icon: Icons.account_balance_wallet_outlined,
+        onTap:
+            () => Navigator.of(context).pushReplacementNamed(AppRouter.wallet),
+      ),
     ];
   }
 
@@ -318,7 +333,7 @@ class _SummaryHeader extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Phase 0.2 auth integration',
+              'Phase 0.3 wallet and identity preparation',
               style: Theme.of(context).textTheme.headlineSmall,
             ),
             const SizedBox(height: 12),

@@ -1,11 +1,11 @@
 import 'dart:async';
 
-import '../../../core/errors/app_error.dart';
-import '../../../core/network/ws_client.dart';
-import '../../auth/models/session_models.dart';
-import '../../auth/models/whoami_models.dart';
-import '../models/ws_request_models.dart';
-import '../models/ws_response_models.dart';
+import 'package:scavo_exchange_frontend/core/errors/app_error.dart';
+import 'package:scavo_exchange_frontend/core/network/ws_client.dart';
+import 'package:scavo_exchange_frontend/modules/auth/models/session_models.dart';
+import 'package:scavo_exchange_frontend/modules/auth/models/whoami_models.dart';
+import 'package:scavo_exchange_frontend/modules/ws/models/ws_request_models.dart';
+import 'package:scavo_exchange_frontend/modules/ws/models/ws_response_models.dart';
 
 class AuthWsService {
   AuthWsService(this._client);

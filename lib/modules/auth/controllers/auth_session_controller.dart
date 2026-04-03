@@ -1,13 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-
-import '../../../core/errors/app_error.dart';
-import '../../../core/storage/session_storage.dart';
-import '../models/auth_state.dart';
-import '../models/login_models.dart';
-import '../services/auth_api.dart';
-import '../../ws/services/auth_ws_service.dart';
+import 'package:scavo_exchange_frontend/core/errors/app_error.dart';
+import 'package:scavo_exchange_frontend/core/storage/session_storage.dart';
+import 'package:scavo_exchange_frontend/modules/auth/models/auth_state.dart';
+import 'package:scavo_exchange_frontend/modules/auth/models/login_models.dart';
+import 'package:scavo_exchange_frontend/modules/auth/services/auth_api.dart';
+import 'package:scavo_exchange_frontend/modules/ws/services/auth_ws_service.dart';
 
 class AuthSessionController extends ChangeNotifier {
   AuthSessionController({
@@ -83,6 +82,31 @@ class AuthSessionController extends ChangeNotifier {
         ),
       );
     }
+  }
+
+  Future<void> authenticateWithExternalToken(String token) async {
+    final normalized = token.trim();
+    if (normalized.isEmpty) {
+      _emit(
+        _state.copyWith(
+          lastError: AppError(
+            message: 'External authentication returned an empty access token.',
+            code: 'empty_external_token',
+          ),
+        ),
+      );
+      return;
+    }
+
+    await _sessionStorage.writeToken(normalized);
+    _emit(
+      _state.copyWith(
+        token: normalized,
+        isSubmittingLogin: false,
+        clearLastError: true,
+      ),
+    );
+    await _restoreAuthenticatedState(normalized);
   }
 
   Future<void> refreshAuthenticatedState() async {
@@ -245,24 +269,12 @@ class AuthSessionController extends ChangeNotifier {
 
   void _handleWsError(AppError error) {
     _emit(
-      _state.copyWith(
-        wsStatus:
-            _state.isAuthenticated
-                ? WsConnectionStatus.degraded
-                : WsConnectionStatus.disconnected,
-        wsError: error,
-      ),
+      _state.copyWith(wsStatus: WsConnectionStatus.degraded, wsError: error),
     );
   }
 
   void _emit(AuthState next) {
     _state = next;
     notifyListeners();
-  }
-
-  @override
-  void dispose() {
-    unawaited(_authWsService.dispose());
-    super.dispose();
   }
 }

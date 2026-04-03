@@ -87,9 +87,10 @@ class SessionView {
       subject: json['subject']?.toString(),
       issuer: json['issuer']?.toString(),
       expiresAt: _parseDate(json['expires_at']),
-      user: json['user'] is Map<String, dynamic>
-          ? UserView.fromJson(json['user'] as Map<String, dynamic>)
-          : null,
+      user:
+          json['user'] is Map<String, dynamic>
+              ? UserView.fromJson(json['user'] as Map<String, dynamic>)
+              : null,
     );
   }
 }

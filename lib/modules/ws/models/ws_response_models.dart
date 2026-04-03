@@ -1,4 +1,5 @@
-import '../../../core/errors/app_error.dart';
+import 'package:scavo_exchange_frontend/core/errors/app_error.dart';
+
 import 'ws_envelope.dart';
 
 class WsResponse {

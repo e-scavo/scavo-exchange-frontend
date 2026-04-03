@@ -7,10 +7,7 @@ class LoginRequest {
   final String password;
 
   Map<String, dynamic> toJson() {
-    return {
-      'email': email,
-      'password': password,
-    };
+    return {'email': email, 'password': password};
   }
 }
 
@@ -41,9 +38,10 @@ class LoginResponse {
       tokenType: json['token_type']?.toString() ?? '',
       expiresIn: (json['expires_in'] as num?)?.toInt() ?? 0,
       authMethod: json['auth_method']?.toString() ?? '',
-      user: json['user'] is Map<String, dynamic>
-          ? UserView.fromJson(json['user'] as Map<String, dynamic>)
-          : null,
+      user:
+          json['user'] is Map<String, dynamic>
+              ? UserView.fromJson(json['user'] as Map<String, dynamic>)
+              : null,
       walletId: json['wallet_id']?.toString(),
       walletAddress: json['wallet_address']?.toString(),
       chain: json['chain']?.toString(),

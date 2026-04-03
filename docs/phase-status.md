@@ -86,3 +86,10 @@ Phase 0.1 establishes the frontend project baseline and is the first valid SCAVO
 ## Phase 0.2
 
 HTTP + WS auth integration added with a central session controller.
+
+
+## Phase 0.3
+
+- Phase 0.3 implemented wallet challenge, manual verify, and wallet inventory surfacing.
+- Wallet identity is now visible in the application shell and session context.
+- Final wallet connector UX remains deferred.

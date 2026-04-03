@@ -83,3 +83,9 @@ It does not define product deadlines or implementation commitments beyond the cu
 ## Conclusion
 
 The roadmap keeps the frontend anchored to backend truth while still giving a clear expansion path.
+
+
+## Near-term next step after Phase 0.3
+
+- Add wallet linking, merge, primary, and detach preparation once backend validation paths are ready.
+- Decide the definitive wallet connector strategy for web and mobile in a later phase.

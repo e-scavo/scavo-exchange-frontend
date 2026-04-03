@@ -1,4 +1,5 @@
-import '../../../core/errors/app_error.dart';
+import 'package:scavo_exchange_frontend/core/errors/app_error.dart';
+
 import 'session_models.dart';
 import 'whoami_models.dart';
 
@@ -50,6 +51,17 @@ class AuthState {
   bool get isBootstrapping =>
       bootstrapStatus == AuthBootstrapStatus.bootstrapping;
   bool get canOpenProtectedViews => isAuthenticated;
+  bool get isWalletAuthenticated {
+    final authMethod = whoAmI?.authMethod ?? session?.authMethod ?? '';
+    return authMethod.toLowerCase().contains('wallet');
+  }
+
+  String? get resolvedWalletAddress =>
+      whoAmI?.walletAddress ?? session?.walletAddress;
+
+  String? get resolvedWalletId => whoAmI?.walletId ?? session?.walletId;
+
+  String? get resolvedChain => whoAmI?.chain ?? session?.chain;
 
   AuthState copyWith({
     AuthBootstrapStatus? bootstrapStatus,

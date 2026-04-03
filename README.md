@@ -129,3 +129,8 @@ Frontend documentation starts in:
 ## Phase 0.2 status
 
 The frontend now restores authenticated state through a central controller and complements HTTP auth with backend-confirmed WebSocket actions: `system.ping`, `auth.session`, and `auth.whoami`.
+
+
+## Phase 0.3 wallet surface
+
+The frontend now exposes a Wallet section that can request wallet challenges, accept a manually produced signature, and display wallet inventory from authenticated sessions. This is a preparation layer and not yet the final wallet connector experience.

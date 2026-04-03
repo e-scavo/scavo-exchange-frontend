@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:scavo_exchange_frontend/core/config/app_config.dart';
+import 'package:scavo_exchange_frontend/core/network/api_client.dart';
+import 'package:scavo_exchange_frontend/core/network/ws_client.dart';
+import 'package:scavo_exchange_frontend/core/storage/session_storage.dart';
+import 'package:scavo_exchange_frontend/modules/auth/controllers/auth_session_controller.dart';
+import 'package:scavo_exchange_frontend/modules/auth/services/auth_api.dart';
+import 'package:scavo_exchange_frontend/modules/system/services/system_api.dart';
+import 'package:scavo_exchange_frontend/modules/ws/services/auth_ws_service.dart';
 
-import '../core/config/app_config.dart';
-import '../core/network/api_client.dart';
-import '../core/network/ws_client.dart';
-import '../core/storage/session_storage.dart';
-import '../modules/auth/controllers/auth_session_controller.dart';
-import '../modules/auth/services/auth_api.dart';
-import '../modules/system/services/system_api.dart';
-import '../modules/ws/services/auth_ws_service.dart';
 import 'router.dart';
 import 'theme.dart';
 

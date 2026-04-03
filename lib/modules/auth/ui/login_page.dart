@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-
-import '../../../app/app.dart';
-import '../../../app/responsive_app_shell.dart';
-import '../../../app/router.dart';
+import 'package:scavo_exchange_frontend/app/app.dart';
+import 'package:scavo_exchange_frontend/app/responsive_app_shell.dart';
+import 'package:scavo_exchange_frontend/app/router.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -209,6 +208,12 @@ class _LoginPageState extends State<LoginPage> {
         icon: Icons.badge_outlined,
         onTap:
             () => Navigator.of(context).pushReplacementNamed(AppRouter.session),
+      ),
+      ShellDestination(
+        label: 'Wallet',
+        icon: Icons.account_balance_wallet_outlined,
+        onTap:
+            () => Navigator.of(context).pushReplacementNamed(AppRouter.wallet),
       ),
     ];
   }

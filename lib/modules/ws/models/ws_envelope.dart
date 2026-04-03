@@ -18,12 +18,14 @@ class WsEnvelope {
       id: json['id']?.toString() ?? '',
       type: json['type']?.toString() ?? '',
       action: json['action']?.toString() ?? '',
-      data: json['data'] is Map<String, dynamic>
-          ? json['data'] as Map<String, dynamic>
-          : null,
-      error: json['error'] is Map<String, dynamic>
-          ? WsErrorPayload.fromJson(json['error'] as Map<String, dynamic>)
-          : null,
+      data:
+          json['data'] is Map<String, dynamic>
+              ? json['data'] as Map<String, dynamic>
+              : null,
+      error:
+          json['error'] is Map<String, dynamic>
+              ? WsErrorPayload.fromJson(json['error'] as Map<String, dynamic>)
+              : null,
     );
   }
 
@@ -52,9 +54,6 @@ class WsErrorPayload {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'code': code,
-      'msg': message,
-    };
+    return {'code': code, 'msg': message};
   }
 }
