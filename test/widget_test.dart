@@ -19,6 +19,11 @@ void main() {
               onTap: () {},
             ),
             ShellDestination(label: 'Login', icon: Icons.login, onTap: () {}),
+            ShellDestination(
+              label: 'Wallet',
+              icon: Icons.account_balance_wallet_outlined,
+              onTap: () {},
+            ),
           ],
           child: const SizedBox.expand(),
         ),
@@ -28,5 +33,6 @@ void main() {
     expect(find.text('SCAVO Exchange'), findsOneWidget);
     expect(find.text('Bootstrap'), findsOneWidget);
     expect(find.text('Login'), findsOneWidget);
+    expect(find.text('Wallet'), findsOneWidget);
   });
 }

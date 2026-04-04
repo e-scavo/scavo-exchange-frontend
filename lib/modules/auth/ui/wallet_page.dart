@@ -23,7 +23,9 @@ class _WalletPageState extends State<WalletPage> {
     _walletController ??= WalletFlowController(
       authApi: AppServicesScope.of(context).authApi,
       authSessionController: AppServicesScope.of(context).authSessionController,
+      walletSignerResolver: AppServicesScope.of(context).walletSignerResolver,
     );
+    _walletController!.refreshSignerState();
   }
 
   @override
@@ -63,12 +65,12 @@ class _WalletPageState extends State<WalletPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Phase 0.3 wallet and identity preparation',
+                        'Phase 0.4 abstract wallet signature integration',
                         style: Theme.of(context).textTheme.headlineSmall,
                       ),
                       const SizedBox(height: 12),
                       const Text(
-                        'This phase surfaces wallet challenge, manual signature verification, and wallet inventory using only backend-confirmed contracts. Automatic connectors remain intentionally deferred.',
+                        'This phase keeps manual verification available while adding an abstract signer strategy, a first MetaMask web implementation, and a prepared contract for a future internal SCAVIUM wallet signer.',
                       ),
                       const SizedBox(height: 16),
                       Wrap(

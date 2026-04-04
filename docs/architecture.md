@@ -149,3 +149,7 @@ HTTP + WS auth integration added with a central session controller.
 ## Phase 0.3 extension
 
 Wallet flows now reuse the existing auth session controller as the single session consolidation point. A dedicated wallet flow controller orchestrates challenge, verify, and inventory interactions without changing the application-wide auth pattern introduced in Phase 0.2.
+
+## Phase 0.4 signer architecture
+
+Wallet authentication now passes through an abstract signer boundary. The first concrete implementation targets injected web providers, while the internal SCAVIUM signer is intentionally left as a prepared contract so the future integration does not require auth flow rewrites.

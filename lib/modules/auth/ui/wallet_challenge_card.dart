@@ -64,7 +64,7 @@ class _WalletChallengeCardState extends State<WalletChallengeCard> {
             ),
             const SizedBox(height: 12),
             const Text(
-              'Phase 0.3 surfaces the backend-confirmed challenge contract without assuming a final wallet connector. Request the message here, sign it externally, and then paste the signature into the verify flow.',
+              'Phase 0.4 keeps the backend-confirmed challenge contract while allowing automatic signing when a supported signer is available. Manual signing remains available as the fallback path.',
             ),
             const SizedBox(height: 20),
             Form(
@@ -93,7 +93,7 @@ class _WalletChallengeCardState extends State<WalletChallengeCard> {
                     controller: _chainController,
                     decoration: const InputDecoration(
                       labelText: 'Chain',
-                      hintText: 'ethereum',
+                      hintText: 'scavium',
                     ),
                     onChanged:
                         (value) => widget.controller.updateDraft(

@@ -89,3 +89,8 @@ The roadmap keeps the frontend anchored to backend truth while still giving a cl
 
 - Add wallet linking, merge, primary, and detach preparation once backend validation paths are ready.
 - Decide the definitive wallet connector strategy for web and mobile in a later phase.
+
+## Near-term next step after Phase 0.4
+
+- Evaluate when to plug in the internal SCAVIUM Wallet signer through the prepared abstraction.
+- Expand wallet identity flows only after verify runtime is fully validated.

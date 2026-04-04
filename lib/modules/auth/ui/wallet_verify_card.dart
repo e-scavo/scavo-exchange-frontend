@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:scavo_exchange_frontend/modules/auth/controllers/wallet_flow_controller.dart';
 import 'package:scavo_exchange_frontend/modules/auth/models/wallet_flow_state.dart';
+import 'package:scavo_exchange_frontend/modules/auth/models/wallet_signature_models.dart';
 
 class WalletVerifyCard extends StatefulWidget {
   const WalletVerifyCard({
@@ -59,6 +60,9 @@ class _WalletVerifyCardState extends State<WalletVerifyCard> {
   @override
   Widget build(BuildContext context) {
     final verified = widget.state.lastVerifiedResponse;
+    final signerState = widget.state.signerState;
+    final hasAutomaticSigner = signerState.isAvailable;
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(20),
@@ -70,8 +74,100 @@ class _WalletVerifyCardState extends State<WalletVerifyCard> {
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 12),
-            const Text(
-              'Paste the signed challenge manually. This keeps Phase 0.3 aligned with the backend while connector decisions remain intentionally deferred.',
+            Text(
+              hasAutomaticSigner
+                  ? 'An automatic signer is available for this platform. You can sign the backend challenge directly from the app or keep using manual signature entry.'
+                  : 'Automatic signing is not available right now, so manual signature entry remains active.',
+            ),
+            const SizedBox(height: 16),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Resolved signer',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    '${signerState.displayName} • ${_labelForSignerType(signerState.signerType)}',
+                  ),
+                  const SizedBox(height: 6),
+                  Text(signerState.description),
+                  if ((signerState.address ?? '').trim().isNotEmpty) ...[
+                    const SizedBox(height: 8),
+                    SelectableText('Signer address: ${signerState.address!}'),
+                  ],
+                  const SizedBox(height: 12),
+                  Wrap(
+                    spacing: 12,
+                    runSpacing: 12,
+                    children: [
+                      OutlinedButton.icon(
+                        onPressed:
+                            widget.state.isRefreshingSigner
+                                ? null
+                                : widget.controller.refreshSignerState,
+                        icon:
+                            widget.state.isRefreshingSigner
+                                ? const SizedBox(
+                                  width: 16,
+                                  height: 16,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                                : const Icon(Icons.sync),
+                        label: const Text('Refresh signer'),
+                      ),
+                      if (hasAutomaticSigner)
+                        OutlinedButton.icon(
+                          onPressed:
+                              widget.state.isSigningChallenge
+                                  ? null
+                                  : _signChallenge,
+                          icon:
+                              widget.state.isSigningChallenge
+                                  ? const SizedBox(
+                                    width: 16,
+                                    height: 16,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                  : const Icon(Icons.draw_outlined),
+                          label: const Text('Sign challenge'),
+                        ),
+                      if (hasAutomaticSigner)
+                        FilledButton.icon(
+                          onPressed:
+                              widget.state.isSigningChallenge ||
+                                      widget.state.isVerifying
+                                  ? null
+                                  : _signAndVerify,
+                          icon:
+                              widget.state.isSigningChallenge ||
+                                      widget.state.isVerifying
+                                  ? const SizedBox(
+                                    width: 16,
+                                    height: 16,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                  : const Icon(Icons.verified_user_outlined),
+                          label: const Text('Sign and verify'),
+                        ),
+                    ],
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: 20),
             Form(
@@ -145,7 +241,9 @@ class _WalletVerifyCardState extends State<WalletVerifyCard> {
                       )
                       : const Icon(Icons.verified_user_outlined),
               label: Text(
-                widget.state.isVerifying ? 'Verifying...' : 'Verify wallet',
+                widget.state.isVerifying
+                    ? 'Verifying...'
+                    : 'Verify wallet manually',
               ),
             ),
             if (verified != null) ...[
@@ -173,6 +271,25 @@ class _WalletVerifyCardState extends State<WalletVerifyCard> {
       address: _addressController.text.trim(),
       signature: _signatureController.text.trim(),
     );
+  }
+
+  Future<void> _signChallenge() async {
+    await widget.controller.signChallengeWithPreferredSigner();
+  }
+
+  Future<void> _signAndVerify() async {
+    await widget.controller.signAndVerifyWithPreferredSigner();
+  }
+
+  String _labelForSignerType(WalletSignerType signerType) {
+    switch (signerType) {
+      case WalletSignerType.metaMask:
+        return 'external web signer';
+      case WalletSignerType.internalPrepared:
+        return 'internal signer contract';
+      case WalletSignerType.manualFallback:
+        return 'manual fallback';
+    }
   }
 }
 

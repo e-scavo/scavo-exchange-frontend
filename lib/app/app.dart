@@ -5,6 +5,7 @@ import 'package:scavo_exchange_frontend/core/network/ws_client.dart';
 import 'package:scavo_exchange_frontend/core/storage/session_storage.dart';
 import 'package:scavo_exchange_frontend/modules/auth/controllers/auth_session_controller.dart';
 import 'package:scavo_exchange_frontend/modules/auth/services/auth_api.dart';
+import 'package:scavo_exchange_frontend/modules/auth/services/wallet_signer_resolver.dart';
 import 'package:scavo_exchange_frontend/modules/system/services/system_api.dart';
 import 'package:scavo_exchange_frontend/modules/ws/services/auth_ws_service.dart';
 
@@ -20,6 +21,7 @@ class AppServices {
     required this.systemApi,
     required this.authApi,
     required this.authWsService,
+    required this.walletSignerResolver,
     required this.authSessionController,
   });
 
@@ -30,6 +32,7 @@ class AppServices {
   final SystemApi systemApi;
   final AuthApi authApi;
   final AuthWsService authWsService;
+  final WalletSignerResolver walletSignerResolver;
   final AuthSessionController authSessionController;
 }
 
@@ -55,6 +58,7 @@ class _ScavoExchangeAppState extends State<ScavoExchangeApp> {
     final wsClient = WsClient(config.wsUrl);
     final authApi = AuthApi(apiClient);
     final authWsService = AuthWsService(wsClient);
+    final walletSignerResolver = WalletSignerResolver();
     final authSessionController = AuthSessionController(
       sessionStorage: sessionStorage,
       authApi: authApi,
@@ -69,6 +73,7 @@ class _ScavoExchangeAppState extends State<ScavoExchangeApp> {
       systemApi: SystemApi(apiClient),
       authApi: authApi,
       authWsService: authWsService,
+      walletSignerResolver: walletSignerResolver,
       authSessionController: authSessionController,
     );
 

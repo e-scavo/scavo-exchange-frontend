@@ -93,3 +93,10 @@ HTTP + WS auth integration added with a central session controller.
 - Phase 0.3 implemented wallet challenge, manual verify, and wallet inventory surfacing.
 - Wallet identity is now visible in the application shell and session context.
 - Final wallet connector UX remains deferred.
+
+## Phase 0.4
+
+- Phase 0.4 added an abstract wallet signer layer.
+- MetaMask-style injected web signing is the first automatic signer implementation.
+- The internal SCAVIUM signer contract is prepared but not implemented yet.
+- Manual signature entry remains the fallback path.

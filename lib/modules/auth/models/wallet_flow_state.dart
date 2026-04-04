@@ -1,6 +1,8 @@
 import 'package:scavo_exchange_frontend/core/errors/app_error.dart';
+import 'package:scavo_exchange_frontend/modules/auth/models/wallet_signer_state.dart';
 
 import 'wallet_models.dart';
+import 'wallet_signature_models.dart';
 
 class WalletFlowState {
   const WalletFlowState({
@@ -8,13 +10,21 @@ class WalletFlowState {
     this.walletsResponse,
     this.lastVerifiedResponse,
     this.challengeAddress = '',
-    this.challengeChain = 'ethereum',
+    this.challengeChain = 'scavium',
     this.verifyAddress = '',
     this.verifyChallengeId = '',
     this.signature = '',
     this.isRequestingChallenge = false,
     this.isVerifying = false,
     this.isLoadingWallets = false,
+    this.isRefreshingSigner = false,
+    this.isSigningChallenge = false,
+    this.signerState = const WalletSignerState.unavailable(
+      signerType: WalletSignerType.manualFallback,
+      displayName: 'Manual signature fallback',
+      description:
+          'No automatic signer has been resolved yet. Manual signature entry remains available.',
+    ),
     this.lastError,
     this.lastSuccessMessage,
   });
@@ -24,13 +34,21 @@ class WalletFlowState {
       walletsResponse = null,
       lastVerifiedResponse = null,
       challengeAddress = '',
-      challengeChain = 'ethereum',
+      challengeChain = 'scavium',
       verifyAddress = '',
       verifyChallengeId = '',
       signature = '',
       isRequestingChallenge = false,
       isVerifying = false,
       isLoadingWallets = false,
+      isRefreshingSigner = false,
+      isSigningChallenge = false,
+      signerState = const WalletSignerState.unavailable(
+        signerType: WalletSignerType.manualFallback,
+        displayName: 'Manual signature fallback',
+        description:
+            'No automatic signer has been resolved yet. Manual signature entry remains available.',
+      ),
       lastError = null,
       lastSuccessMessage = null;
 
@@ -45,6 +63,9 @@ class WalletFlowState {
   final bool isRequestingChallenge;
   final bool isVerifying;
   final bool isLoadingWallets;
+  final bool isRefreshingSigner;
+  final bool isSigningChallenge;
+  final WalletSignerState signerState;
   final AppError? lastError;
   final String? lastSuccessMessage;
 
@@ -63,6 +84,9 @@ class WalletFlowState {
     bool? isRequestingChallenge,
     bool? isVerifying,
     bool? isLoadingWallets,
+    bool? isRefreshingSigner,
+    bool? isSigningChallenge,
+    WalletSignerState? signerState,
     AppError? lastError,
     bool clearLastError = false,
     String? lastSuccessMessage,
@@ -90,6 +114,9 @@ class WalletFlowState {
           isRequestingChallenge ?? this.isRequestingChallenge,
       isVerifying: isVerifying ?? this.isVerifying,
       isLoadingWallets: isLoadingWallets ?? this.isLoadingWallets,
+      isRefreshingSigner: isRefreshingSigner ?? this.isRefreshingSigner,
+      isSigningChallenge: isSigningChallenge ?? this.isSigningChallenge,
+      signerState: signerState ?? this.signerState,
       lastError: clearLastError ? null : (lastError ?? this.lastError),
       lastSuccessMessage:
           clearLastSuccessMessage

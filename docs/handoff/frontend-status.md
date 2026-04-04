@@ -95,3 +95,10 @@ Frontend is no longer a template. It now has a safe technical baseline for conti
 - Wallet challenge and verify are exposed through a manual signature workflow.
 - Wallet inventory can be loaded from an authenticated session.
 - Automatic wallet connectors are intentionally not implemented yet.
+
+## Phase 0.4 status
+
+- abstract signer layer added
+- injected web signer implemented
+- internal signer contract prepared
+- manual fallback preserved
