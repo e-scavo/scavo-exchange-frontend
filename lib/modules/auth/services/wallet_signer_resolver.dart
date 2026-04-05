@@ -3,13 +3,15 @@ import 'package:scavo_exchange_frontend/modules/auth/models/wallet_signer_state.
 import 'wallet_signer_internal_contract.dart';
 import 'wallet_signer_service.dart';
 import 'wallet_signer_stub.dart'
-    if (dart.library.html) 'wallet_signer_web.dart' as external_signer;
+    if (dart.library.html) 'wallet_signer_web.dart'
+    as external_signer;
 
 class WalletSignerResolver {
   WalletSignerResolver({
     WalletSignerService? externalSigner,
     WalletSignerService? internalSigner,
-  }) : _externalSigner = externalSigner ?? external_signer.createExternalWalletSigner(),
+  }) : _externalSigner =
+           externalSigner ?? external_signer.createExternalWalletSigner(),
        _internalSigner = internalSigner ?? const InternalWalletSignerContract();
 
   final WalletSignerService _externalSigner;
